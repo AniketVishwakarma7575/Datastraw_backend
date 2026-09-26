@@ -51,21 +51,21 @@ const getTickets = async ({ search, status, page = 1, limit = 10 }) => {
   const currentPage = Math.max(Number(page) || 1, 1);
   const currentLimit = Math.min(Math.max(Number(limit) || 10, 1), 100);
 
-  const skip = (page - 1) * limit;
+  const skip = (currentPage - 1) * currentLimit;
 
   const [tickets, totalTickets] = await Promise.all([
-    Ticket.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit),
+    Ticket.find(query).sort({ createdAt: -1 }).skip(skip).limit(currentLimit),
 
     Ticket.countDocuments(query),
   ]);
 
-  const totalPages = Math.ceil(totalTickets / limit);
+  const totalPages = Math.ceil(totalTickets / currentLimit);
 
   return {
     tickets,
     pagination: {
-      currentPage: page,
-      limit,
+      currentPage,
+      limit: currentLimit,
       totalTickets,
       totalPages,
     },
