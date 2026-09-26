@@ -10,10 +10,13 @@ import ticketRoutes from "./routes/ticket.routes.js";
 import noteRoutes from "./routes/note.routes.js";
 
 const app = express();
+const frontendOrigin = process.env.FRONTEND_URL
+  ? new URL(process.env.FRONTEND_URL.trim()).origin
+  : undefined;
 
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL,
+    origin: frontendOrigin,
   }),
 );
 app.use(express.json({ limit: "10kb" }));
