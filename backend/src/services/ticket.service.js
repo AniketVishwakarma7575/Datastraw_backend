@@ -6,13 +6,18 @@ const isValidEmail = (email) => {
 };
 
 const createTicket = async (ticketData) => {
-  const { customerName, customerEmail, subject, description } = ticketData;
+  const { customerName, customerEmail, subject, description } = ticketData ?? {};
 
-  if (!customerName || !customerEmail || !subject || !description) {
+  if (
+    [customerName, customerEmail, subject, description].some(
+      (value) => typeof value !== "string" || !value.trim(),
+    )
+  ) {
     throw new ApiError(400, "All ticket fields are required");
   }
 
-  if (!isValidEmail(customerEmail)) {
+  const normalizedEmail = customerEmail.trim();
+  if (!isValidEmail(normalizedEmail)) {
     throw new ApiError(400, "Invalid email address");
   }
 
@@ -21,7 +26,7 @@ const createTicket = async (ticketData) => {
   const ticket = await Ticket.create({
     ticketId,
     customerName: customerName.trim(),
-    customerEmail: customerEmail.trim(),
+    customerEmail: normalizedEmail,
     subject: subject.trim(),
     description: description.trim(),
   });
